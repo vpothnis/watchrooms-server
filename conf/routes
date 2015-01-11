@@ -1,0 +1,107 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           controllers.Application.index()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+# -------------------------
+# Buildings related actions
+# -------------------------
+
+# list buildings
+GET			/v1/buildings						controllers.BuildingController.listBuildings(page: Int, size: Int)
+
+# get building
+GET			/v1/buildings/:buildingId			controllers.BuildingController.getBuilding(buildingId: String)
+
+# update building 
+PUT			/v1/buildings/:buildingId			controllers.BuildingController.updateBuilding(buildingId: String)
+
+# delete building
+DELETE		/v1/buildings/:buildingId			controllers.BuildingController.deleteBuilding(buildingId: String)
+
+# create building
+POST		/v1/buildings						controllers.BuildingController.createBuilding()
+
+# -------------------------
+# Floors related actions
+# -------------------------
+
+# list floors
+GET			/v1/floors						controllers.FloorController.listFloors(buildingId: String, page: Int, size: Int)
+
+# get floor
+GET			/v1/floors/:floorId				controllers.FloorController.getFloor(floorId: String)
+
+# update floor 
+PUT			/v1/floors/:floorId				controllers.FloorController.updateFloor(floorId: String)
+
+# delete floor
+DELETE		/v1/floors/:floorId				controllers.FloorController.deleteFloor(floorId: String)
+
+# create floor
+POST		/v1/floors						controllers.FloorController.createFloor()
+
+# -------------------------
+# Rooms related actions
+# -------------------------
+
+# list rooms
+GET			/v1/rooms						controllers.RoomController.listRooms(floorId: String, page: Int, size: Int, userId ?= null)
+
+# get room
+GET			/v1/rooms/:roomId				controllers.RoomController.getRoom(roomId: String)
+
+# update room 
+PUT			/v1/rooms/:roomId				controllers.RoomController.updateRoom(roomId: String)
+
+# delete room
+DELETE		/v1/rooms/:roomId				controllers.RoomController.deleteRoom(roomId: String)
+
+# create room
+POST		/v1/rooms						controllers.RoomController.createRoom()
+
+# -------------------------
+# Users related actions
+# -------------------------
+
+# get user
+GET			/v1/users/:userId							controllers.UserController.getUser(userId: String)
+
+# get user by emailId
+GET			/v1/userByEmailId/:emailId					controllers.UserController.getUserByEmailId(emailId: String)
+
+# get user subscriptions
+GET			/v1/users/:userId/subscriptions				controllers.UserController.getUserSubscriptions(userId: String)
+
+# update user 
+PUT			/v1/users/:userId							controllers.UserController.updateUser(userId: String)
+
+# delete user
+DELETE		/v1/users/:userId							controllers.UserController.deleteUser(userId: String)
+
+# create user
+POST		/v1/users									controllers.UserController.createUser()
+
+# -------------------------
+# User Device related actions
+# -------------------------
+# register device 
+POST		/v1/users/:userId/devices/register						controllers.DeviceController.registerDevice(userId: String)
+
+# unregister device 
+POST		/v1/users/:userId/devices/unregister					controllers.DeviceController.unregisterDevice(userId: String)
+
+
+# -------------------------
+# Subscriptions related actions
+# -------------------------
+# Subscricbe to a room
+POST		/v1/rooms/:roomId/subscribe/:userId					controllers.SubscriptionController.subscribe(roomId: String, userId: String)
+
+# Unubscricbe from a room
+POST		/v1/rooms/:roomId/unsubscribe/:userId				controllers.SubscriptionController.unsubscribe(roomId: String, userId: String)
