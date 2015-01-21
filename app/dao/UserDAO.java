@@ -9,8 +9,6 @@ import java.util.UUID;
 import models.Subscription;
 import models.User;
 
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -73,16 +71,13 @@ public class UserDAO {
 	/**
 	 * list the users in a paginated manner as specified for the given building
 	 * 
-	 * @param floorId
 	 * @param pageNumber
 	 * @param pageSize
 	 * @return
 	 */
-	public List<User> listUsers(String floorId, int pageNumber, int pageSize) {
+	public List<User> getUsers(List<String> userIds) {
 		Query query = new Query();
-		query.skip((pageNumber - 1) * pageSize);
-		query.limit(pageSize);
-		query.with(new Sort(Direction.DESC, "createDate"));
+		query.addCriteria(where("_id").in(userIds));
 		return mongoTemplate.find(query, User.class);
 	}
 
@@ -108,6 +103,6 @@ public class UserDAO {
 
 	public User getUserByEmailId(String emailId) {
 		return mongoTemplate.findOne(new Query(where("emailId").is(emailId)), User.class);
-    }
+	}
 
 }

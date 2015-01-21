@@ -1,11 +1,13 @@
 package dao;
 
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+
+import java.util.List;
+
 import models.Subscription;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-
-import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 public class SubscriptionDAO {
 
@@ -36,4 +38,14 @@ public class SubscriptionDAO {
 		mongoTemplate.remove(query, MongoDataSource.SUBSCRIPTIONS_COLL);
 	}
 
+	/**
+	 * get all the subscriptions for the given room
+	 * 
+	 * @param roomId
+	 * @return
+	 */
+	public List<Subscription> getRoomSubscriptions(String roomId) {
+		Query query = new Query(where("roomId").is(roomId));
+		return mongoTemplate.find(query, Subscription.class);
+	}
 }

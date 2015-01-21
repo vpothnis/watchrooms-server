@@ -8,15 +8,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import messages.StatusChangeMessage;
 import models.Building;
 import models.Room;
+import models.Room.RoomStatus;
 import models.RoomList;
 import models.Subscription;
 import play.Logger;
+import play.libs.Akka;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
+import akka.actor.ActorRef;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -175,6 +179,37 @@ public class RoomController extends Controller {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Results.internalServerError("Unable to update the room.");
+		}
+	}
+
+	/**
+	 * Update the room's status with the given value
+	 * 
+	 * @param roomId
+	 * @param status
+	 * @return
+	 */
+	public static Result updateRoomStatus(String roomId, String status) {
+		try {
+			Logger.debug(format("trying to update room [%s] with status: [%s] ", roomId, status));
+			RoomDAO dao = getRoomDao();
+			Room fromDB = dao.getRoom(roomId);
+			if (fromDB != null) {
+				fromDB.setCurrentStatus(RoomStatus.valueOf(status));
+				fromDB = dao.updateRoom(fromDB);
+				Logger.debug("updated room successfully: " + fromDB.toString());
+
+				// trigger the push notifications of the status update.
+				Akka.system().actorSelection("/user/statusNotifier").tell(new StatusChangeMessage(roomId, status), ActorRef.noSender());
+
+				response().setContentType("application/json");
+				return ok(new ObjectMapper().writeValueAsString(fromDB));
+			} else {
+				return notFound(format("room with id:[%s] not found", roomId));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Results.internalServerError("Unable to update the room status.");
 		}
 	}
 

@@ -51,19 +51,22 @@ POST		/v1/floors						controllers.FloorController.createFloor()
 # -------------------------
 
 # list rooms
-GET			/v1/rooms						controllers.RoomController.listRooms(floorId: String, page: Int, size: Int, userId ?= null)
+GET			/v1/rooms								controllers.RoomController.listRooms(floorId: String, page: Int, size: Int, userId ?= null)
 
 # get room
-GET			/v1/rooms/:roomId				controllers.RoomController.getRoom(roomId: String)
+GET			/v1/rooms/:roomId						controllers.RoomController.getRoom(roomId: String)
 
 # update room 
-PUT			/v1/rooms/:roomId				controllers.RoomController.updateRoom(roomId: String)
+PUT			/v1/rooms/:roomId						controllers.RoomController.updateRoom(roomId: String)
+
+# update room status
+PUT			/v1/rooms/:roomId/status/:status		controllers.RoomController.updateRoomStatus(roomId: String, status: String)
 
 # delete room
-DELETE		/v1/rooms/:roomId				controllers.RoomController.deleteRoom(roomId: String)
+DELETE		/v1/rooms/:roomId						controllers.RoomController.deleteRoom(roomId: String)
 
 # create room
-POST		/v1/rooms						controllers.RoomController.createRoom()
+POST		/v1/rooms								controllers.RoomController.createRoom()
 
 # -------------------------
 # Users related actions
