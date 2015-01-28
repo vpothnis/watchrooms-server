@@ -1,4 +1,5 @@
 import static java.lang.String.format;
+import dao.MongoDataSource;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
@@ -26,6 +27,9 @@ public class Global extends GlobalSettings {
 	@Override
 	public void onStart(Application arg0) {
 		super.onStart(arg0);
+		
+		// startup the Mongo Data Source
+		MongoDataSource.getInstance();
 
 		// create the status notifier actor
 		statusNotifier = Akka.system().actorOf(Props.create(StatusNotifier.class), "statusNotifier");

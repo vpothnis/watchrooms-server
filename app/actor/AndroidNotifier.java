@@ -7,6 +7,7 @@ import models.GCMPayload;
 
 import org.apache.http.HttpStatus;
 
+import play.Configuration;
 import play.Logger;
 import play.libs.F.Promise;
 import play.libs.ws.WS;
@@ -41,9 +42,9 @@ public class AndroidNotifier extends UntypedActor {
 
 			GCMPayload payload = new GCMPayload(false, registrationIds, ((DeviceNotificationMessage) message).getMessage());
 			payload.setCollapseKey("WatchroomsStatusUpdate");
-			
-			WSRequestHolder wsRequestHolder = WS.url("https://android.googleapis.com/gcm/send");
-			wsRequestHolder.setHeader("Authorization", "key=AIzaSyAJTRqFAvrF2WqFdMc5EB3XTw_Id6SzrAw");
+
+			WSRequestHolder wsRequestHolder = WS.url(Configuration.root().getString("gcm.url"));
+			wsRequestHolder.setHeader("Authorization", Configuration.root().getString("gcm.authKey"));
 			wsRequestHolder.setContentType("application/json");
 			String jsonPayload = new ObjectMapper().writeValueAsString(payload);
 
