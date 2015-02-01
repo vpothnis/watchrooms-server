@@ -2,10 +2,12 @@ package controllers;
 
 import static java.lang.String.format;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import models.Room;
+import models.RoomList;
 import models.Subscription;
-import models.SubscriptionList;
 import models.User;
 import play.Logger;
 import play.mvc.BodyParser;
@@ -16,6 +18,7 @@ import play.mvc.Results;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dao.MongoDataSource;
+import dao.RoomDAO;
 import dao.UserDAO;
 
 /**
@@ -86,13 +89,26 @@ public class UserController extends Controller {
 		try {
 			Logger.debug(format("retrieving user with id[%s]", userId));
 			UserDAO dao = getUserDao();
+			RoomDAO roomDao = getRoomDao();
 			User fromDB = dao.getUser(userId);
-			SubscriptionList result = new SubscriptionList();
+			RoomList result = new RoomList();
 			if (fromDB != null) {
 				List<Subscription> subscriptions = dao.getUserSubscriptions(userId);
-				result.setCount(Long.valueOf(subscriptions.size()));
-				result.setSubscriptions(subscriptions);
-				response().setContentType("application/json");
+				if ( subscriptions != null && !subscriptions.isEmpty() ){
+					
+					// fetch the rooms
+					List<String> roomIds = new ArrayList<String>();
+					subscriptions.forEach((sub) -> roomIds.add(sub.getRoomId()));
+					List<Room> rooms = roomDao.getRooms(roomIds); 
+					
+					// set the subscribed status
+					rooms.forEach((room) -> room.setSubscribed(true));
+					
+					// return the results
+					result.setCount(Long.valueOf(rooms.size()));
+					result.setRooms(rooms);
+				}
+				response().setContentType("application/json");		
 				return ok(new ObjectMapper().writeValueAsString(result));
 			} else {
 				return notFound(format("user with id:[%s] not found", userId));
@@ -188,6 +204,17 @@ public class UserController extends Controller {
 	private static UserDAO getUserDao() {
 		MongoDataSource dataSource = MongoDataSource.getInstance();
 		UserDAO dao = new UserDAO(dataSource.getMongoTemplate());
+		return dao;
+	}
+
+	/**
+	 * utility method
+	 * 
+	 * @return
+	 */
+	private static RoomDAO getRoomDao() {
+		MongoDataSource dataSource = MongoDataSource.getInstance();
+		RoomDAO dao = new RoomDAO(dataSource.getMongoTemplate());
 		return dao;
 	}
 

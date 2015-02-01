@@ -61,6 +61,15 @@ public class RoomDAO {
 	}
 
 	/**
+	 * get the rooms for the given list of ids
+	 * 
+	 * @param roomIds
+	 */
+	public List<Room> getRooms(List<String> roomIds) {
+		return mongoTemplate.find(new Query(where("_id").in(roomIds)), Room.class);
+	}
+
+	/**
 	 * delete the room for the given id
 	 * 
 	 * @param roomId
